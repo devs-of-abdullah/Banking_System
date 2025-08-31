@@ -1,0 +1,50 @@
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
+CREATE TABLE public.accounts (
+  accountid integer NOT NULL DEFAULT nextval('accounts_accountid_seq'::regclass),
+  fullname character varying NOT NULL,
+  email character varying NOT NULL UNIQUE,
+  passwordhash character varying NOT NULL,
+  balance numeric DEFAULT 1000.00,
+  createdat timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  isdeleted boolean DEFAULT false,
+  pin character varying NOT NULL,
+  CONSTRAINT accounts_pkey PRIMARY KEY (accountid)
+);
+CREATE TABLE public.deposits (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  accountid integer NOT NULL,
+  amount numeric NOT NULL,
+  description text,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT deposits_pkey PRIMARY KEY (id),
+  CONSTRAINT deposits_accountid_fkey FOREIGN KEY (accountid) REFERENCES public.accounts(accountid)
+);
+CREATE TABLE public.sessions (
+  sessionid integer NOT NULL DEFAULT nextval('sessions_sessionid_seq'::regclass),
+  accountid integer NOT NULL,
+  loginat timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT sessions_pkey PRIMARY KEY (sessionid),
+  CONSTRAINT sessions_accountid_fkey FOREIGN KEY (accountid) REFERENCES public.accounts(accountid)
+);
+CREATE TABLE public.transactions (
+  transactionid integer NOT NULL DEFAULT nextval('transactions_transactionid_seq'::regclass),
+  senderid integer NOT NULL,
+  recieverid integer NOT NULL,
+  amount numeric NOT NULL,
+  description character varying,
+  createdat timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT transactions_pkey PRIMARY KEY (transactionid),
+  CONSTRAINT transactions_senderid_fkey FOREIGN KEY (senderid) REFERENCES public.accounts(accountid),
+  CONSTRAINT transactions_recieverid_fkey FOREIGN KEY (recieverid) REFERENCES public.accounts(accountid)
+);
+CREATE TABLE public.withdraws (
+  withdrawid bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  accountid integer NOT NULL,
+  amount numeric NOT NULL,
+  description text,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT withdraws_pkey PRIMARY KEY (withdrawid),
+  CONSTRAINT withdraws_accountid_fkey FOREIGN KEY (accountid) REFERENCES public.accounts(accountid)
+);
