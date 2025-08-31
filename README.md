@@ -31,6 +31,3 @@ It includes a **Windows Forms client application** and an **ASP.NET Web API back
 - `Bussiness Layer/` → Adding the bussiness to data  
 
 ---
- 
-   ```csharp
-   clsDataAccess -> clsDataAccessSettings
